@@ -3,7 +3,7 @@ const router = express.Router();
 const { Post, User, Image, Comment } = require('../models')
 const { isLoggedIn } = require('./middlewares')
 
-router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
+router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {  
     try {
      const post = await Post.findOne({ where: {id: req.params.postId }})   
      if (!post) {
@@ -19,7 +19,7 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
 
 router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
     try {
-     const post = await Post.findOne({ where: {id: req.params.postId }})   
+     const post = await Post.findOne({ where: {id: req.params.postId }}) 
      if (!post) {
          return res.status(403).send('게시글이 존재하지 않습니다.')
      }
@@ -44,12 +44,16 @@ router.post('/', isLoggedIn, async (req, res, next) => {
             }, {
                 model: Comment,
                 include: [{
-                    model: User,
+                    model: User, // 댓글 작성자
                     attributes: ['id', 'nickname']
                 }],
             }, {
-                model: User,
+                model: User, // 게시글 작성자
                 attributes: ['id', 'nickname'],
+            }, {
+                model: User, // 좋아요 누른 사람
+                as : 'Likers',
+                attributes: ['id'],
             }]
         })    
         res.status(201).json(fullpost);

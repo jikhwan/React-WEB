@@ -24,7 +24,7 @@ import {
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 function likePostAPI(data) {
-  return axios.patch('/post/${data}/like');
+  return axios.patch(`/post/${data}/like`);
 }
 
 function* likePost(action) {
@@ -38,13 +38,13 @@ function* likePost(action) {
     console.error(err);
     yield put({
       type: LIKE_POST_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
 
 function unlikePostAPI(data) {
-  return axios.delete('/post/${data}/like');
+  return axios.delete(`/post/${data}/like`);
 }
 
 function* unlikePost(action) {
@@ -58,7 +58,7 @@ function* unlikePost(action) {
     console.error(err);
     yield put({
       type: UNLIKE_POST_FAILURE,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
@@ -151,12 +151,12 @@ function* addComment(action) {
   }
 }
 
-function* watchLikePosts() {
-  yield takeLatest(LIKE_POSTS_REQUEST, likePosts);
+function* watchLikePost() {
+  yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
 
-function* watchUnlikePosts() {
-  yield takeLatest(UNLIKE_POSTS_REQUEST, unlikePosts);
+function* watchUnlikePost() {
+  yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
 }
 
 function* watchLoadPosts() {
