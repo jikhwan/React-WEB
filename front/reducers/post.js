@@ -62,8 +62,7 @@ export const addComment = (data) => ({
 // 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수(불변성은 지키면서)
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
-    case LIKE_POST_REQUEST:
-      console.log('1')   
+    case LIKE_POST_REQUEST:   
       draft.likePostsLoading = true;
       draft.likePostsDone = false;
       draft.likePostsError = null;
@@ -102,7 +101,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOAD_POSTS_SUCCESS:
       draft.loadPostsLoading = false;
       draft.loadPostsDone = true;
-      draft.mainPosts = action.data.concat(draft.mainPosts);
+      draft.mainPosts = draft.mainPosts.concat(action.data);
       draft.hasMorePosts = draft.mainPosts.length < 50;
       break;
     case LOAD_POSTS_FAILURE:
@@ -131,7 +130,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case REMOVE_POST_SUCCESS:
       draft.removePostLoading = false;
       draft.removePostDone = true;
-      draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data);
+      draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data.PostId);
       break;
     case REMOVE_POST_FAILURE:
       draft.removePostLoading = false;

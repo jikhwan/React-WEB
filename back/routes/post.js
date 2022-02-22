@@ -90,6 +90,25 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
     }  
 })
 
+router.delete('/:postId', isLoggedIn, async (req, res, next) => {
+    try {
+     const post = await Post.findOne({
+          where: { 
+              id: req.params.postId,
+              UserId: req.user.id,
+            }
+        }) 
+     if (!post) {
+         return res.status(403).send('게시글이 존재하지 않습니다.')
+     }
+     await post.destroy()
+     res.status(200).json({ PostId: parseInt(req.params.postId, 10)})
+    } catch (error) {
+        console.error(error);
+        next(error)
+    }
+})
+
 
 router.delete('/', (req, res) => {
     res.json({ id:1 })

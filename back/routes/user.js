@@ -72,6 +72,27 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
     })(req, res, next)
 })
 
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+    try {
+        const NickUser = await User.findOne({
+            where: {
+                id: req.user.id,
+            }
+        })
+        if (!NickUser) {
+            return res.status(403).send('타 사용자의 닉네임을 변경할 수 없습니다.')
+        }
+        NickUser.update({
+            nickname: req.body.nickname
+        })
+        return res.status(200).json({ nickname: req.body.nickname })
+    } catch (error) {
+        console.error(error);
+        next(error)
+        
+    }
+})
+
 router.post('/', isNotLoggedIn, async (req, res, next) => { // POST /USER/
     try {
         const exUser = await User.findOne({

@@ -2,6 +2,9 @@ import { all, delay, fork, put, takeLatest, call } from 'redux-saga/effects';
 import axios from 'axios';
 
 import {
+  CHANGE_NICKNAME_FAILURE,
+  CHANGE_NICKNAME_REQUEST,
+  CHANGE_NICKNAME_SUCCESS,
   LOAD_MY_INFO_REQUEST,
   LOAD_MY_INFO_SUCCESS,
   LOAD_MY_INFO_FAILURE,
@@ -145,6 +148,30 @@ function* loadmyinfo(action) {
   }
 }
 
+function changenicknameAPI(data) {
+  return axios.patch('/user/nickname', { nickname: data });
+}
+
+function* changenickname(action) {
+  try {
+    const result = yield call(changenicknameAPI, action.data);
+    yield put({
+      type: CHANGE_NICKNAME_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: CHANGE_NICKNAME_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function* watchChangenickname() {
+  yield takeLatest(CHANGE_NICKNAME_REQUEST, changenickname);
+}
+
 function* watchLoadmyinfo() {
   yield takeLatest(LOAD_MY_INFO_REQUEST, loadmyinfo);
 }
@@ -172,6 +199,7 @@ function* watchSignUp() {
 
 export default function* userSaga() {
   yield all([
+    fork(watchChangenickname),
     fork(watchLoadmyinfo),
     fork(watchFollow),
     fork(watchUnfollow),

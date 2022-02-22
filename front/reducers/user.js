@@ -83,6 +83,20 @@ export const logoutRequestAction = () => {
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
     switch (action.type) {
+      case CHANGE_NICKNAME_REQUEST:
+        draft.changeNicknameLoading = true;
+        draft.changeNicknameError = null;
+        draft.changeNicknameDone = false;
+        break;
+      case CHANGE_NICKNAME_SUCCESS:
+        draft.changeNicknameLoading = false;
+        draft.me.nickname = action.data.nickname
+        draft.changeNicknameDone = true;
+        break;
+      case CHANGE_NICKNAME_FAILURE:
+        draft.changeNicknameLoading = false;
+        draft.changeNicknameError = action.error;
+        break;
       case LOAD_MY_INFO_REQUEST:
         draft.loadmyinfoLoading = true;
         draft.loadmyinfoError = null;
