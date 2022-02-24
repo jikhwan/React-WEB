@@ -93,6 +93,42 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
     }
 })
 
+router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => {
+    try {
+        const exUser = await User.findOne({
+            where: {
+                id: req.params.userId,
+            }
+        })
+        if (!exUser) {
+            return res.status(403).send('존재하지 않는 사람을 팔로우 할 수 없습니다.')
+        }
+        await exUser.addFollowers(req.user.id)
+        return res.status(200).json({ UserId: parseInt(req.params.UserId, 10) })
+    } catch (error) {
+        console.error(error);
+        next(error)        
+    }
+})
+
+router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => {
+    try {
+        const exUser = await User.findOne({
+            where: {
+                id: req.params.userId,
+            }
+        })
+        if (!exUser) {
+            return res.status(403).send('존재하지 않는 사람을 언팔로우 할 수 없습니다.')
+        }
+        await exUser.removeFollowers(req.user.id)
+        return res.status(200).json({ UserId: parseInt(req.params.userId, 10) })
+    } catch (error) {
+        console.error(error);
+        next(error)        
+    }
+})
+
 router.post('/', isNotLoggedIn, async (req, res, next) => { // POST /USER/
     try {
         const exUser = await User.findOne({
@@ -115,11 +151,66 @@ router.post('/', isNotLoggedIn, async (req, res, next) => { // POST /USER/
         next(error)
     }    
 })
+
+router.get('/following', isLoggedIn, async (req, res, next) => { // POST /USER/
+    try {
+        const user = await User.findOne({
+            where: {
+                id: req.user.id,
+            }
+        });
+    if (!user) {
+        res.status(403).send('없는 사람의 팔로잉을 찾으려고 합니다.')
+    }
+    const following = await user.getFollowings(); 
+    res.status(200).json(following);
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }    
+})
+
+router.get('/follower', isLoggedIn, async (req, res, next) => { // POST /USER/
+    try {
+        const user = await User.findOne({
+            where: {
+                id: req.user.id,
+            }
+        });
+    if (!user) {
+        res.status(403).send('없는 사람의 팔로워를 찾으려고 합니다.')
+    }
+    const follower = await user.getFollowers(); 
+    res.status(200).json(follower);
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }    
+})
+
+router.delete('/:userId/follower', isLoggedIn, async (req, res, next) => { // POST /USER/
+    try {
+        const user = await User.findOne({
+            where: {
+                id: req.params.userId,
+            }
+        });
+    if (!user) {
+        res.status(403).send('없는 사람을 차단하려고 합니다.')
+    }
+    await user.removeFollowings(req.user.id);
+    res.status(200).json({ UserId : parseInt(req.params.userId, 10) })
+    } catch (error) {
+        console.error(error)
+        next(error)
+    }    
+})
+
 router.post('/logout', isLoggedIn, (req, res) => {
     req.logout();
     req.session.destroy();
-    req.send('ok');
-})
+    res.send('ok');
+  });
 
 
 module.exports = router

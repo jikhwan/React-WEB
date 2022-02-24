@@ -1,15 +1,23 @@
 import React, { useEffect } from 'react';
 import Router from 'next/router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Head from 'next/head';
 
 import NicknameEditForm from '../components/NicknameEditForm';
 import AppLayout from '../components/AppLayout';
 import FollowList from '../components/FollowList';
+import { LOAD_FOLLOWER_REQUEST, LOAD_FOLLOWING_REQUEST } from '../reducers/user';
 
 const Profile = () => {
+  const dispatch = useDispatch()
   const { me } = useSelector((state) => state.user);
   useEffect(() => {
+    dispatch({
+      type: LOAD_FOLLOWER_REQUEST,
+    });
+    dispatch({
+      type: LOAD_FOLLOWING_REQUEST,
+    })
     if (!(me && me.id)) {
       Router.push('/');
     }
